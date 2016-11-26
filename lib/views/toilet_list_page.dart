@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 
-import 'package:myapp2/model/vending_machines.dart';
-import 'package:myapp2/styles/basic_styles.dart';
-import 'package:myapp2/model/geolocation.dart';
-import 'package:myapp2/store/my_location_store.dart';
 import 'package:myapp2/common/store.dart';
+import 'package:myapp2/model/geolocation.dart';
+import 'package:myapp2/model/toilet.dart';
+import 'package:myapp2/store/my_location_store.dart';
+import 'package:myapp2/styles/basic_styles.dart';
 
 //現在地。本来はGPS取得したい
 final Geolocation _kMyLocation = new Geolocation(35.858458, 136.304374);
 //
 class _ListItem {
-  final VendingMachine machine;
+  final Toilet toilet;
   final double distance;
 
-  _ListItem(VendingMachine machine) :
-      this.machine = machine,
-      this.distance = machine.location.distanceTo(_kMyLocation);
+  _ListItem(Toilet toilet) :
+      this.toilet = toilet,
+      this.distance = toilet.location.distanceTo(_kMyLocation);
 }
 
 
 //----------------------------------
-class MachineListPage extends StatefulWidget {
+class ToiletListPage extends StatefulWidget {
 
   @override
-  State createState() => new _MachineListPageState();
+  State createState() => new _ToiletListPageState();
 }
-class _MachineListPageState extends State<MachineListPage> implements StateObserver<Geolocation> {
+class _ToiletListPageState extends State<ToiletListPage> implements StateObserver<Geolocation> {
   Geolocation _myLocation;
 
   @override
@@ -46,10 +46,10 @@ class _MachineListPageState extends State<MachineListPage> implements StateObser
 
   @override
   Widget build(BuildContext context) {
-    List<_ListItem> _items = _getSortedItem(_myLocation, VendingMachine.items);
+    List<_ListItem> _items = _getSortedItem(_myLocation, Toilet.items);
 
     return new ScrollableList(
-      itemExtent: 150.0,
+      itemExtent: 200.0,
       children: _createCells(_items)
     );
   }
@@ -61,7 +61,7 @@ class _MachineListPageState extends State<MachineListPage> implements StateObser
   }
 
 
-  static List<_ListItem> _getSortedItem(Geolocation myLocation, List<VendingMachine> machines) {
+  static List<_ListItem> _getSortedItem(Geolocation myLocation, List<Toilet> machines) {
     return machines.map((item) => new _ListItem(item))
       .toList()
       ..sort((_ListItem a, _ListItem b) => (a.distance - b.distance).toInt());
@@ -84,10 +84,21 @@ class _MapCellItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lat = item.machine.location.latitude;
-    final lon = item.machine.location.longitude;
+    final lat = item.toilet.location.latitude;
+    final lon = item.toilet.location.longitude;
     final url = "http://maps.google.com/maps/api/staticmap?center=$lat,$lon&size=320x150&zoom=17&sensor=false";
     final distance = item.distance.toInt();
+    final Toilet toilet = item.toilet;
+
+    final String text1 = "男性トイレ ${toilet.manCount} 女性トイレ ${toilet.womanCount}";
+    final String text2 = "利用可能時間 ${toilet.openTime} - ${toilet.closeTime}";
+    String appendText = "${toilet.notice}\n";
+    if (toilet.hasBabyBed) {
+      appendText += "ベイビーベッド有り ";
+    }
+    if (toilet.hasOstomate) {
+      appendText += "オストメイト有り ";
+    }
 
     return new Padding(
       padding: new EdgeInsets.all(8.0),
@@ -104,7 +115,10 @@ class _MapCellItem extends StatelessWidget {
                 fit: ImageFit.fill
               ),
             ),
-            new Text("Distance ${distance}m")
+            new Text("Distance ${distance}m"),
+            new Text(text1),
+            new Text(text2),
+            new Text(appendText),
           ]
         )
       )

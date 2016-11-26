@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'machine_list_page.dart';
-
+import 'toilet_list_page.dart';
 
 //-------------------------------------------------
 class MainPage extends StatefulWidget {
@@ -13,6 +13,7 @@ class _MainPageState extends State<MainPage> {
   //
   @override
   void initState() {
+    super.initState();
     _currentTab = 0;
   }
 
@@ -52,6 +53,9 @@ class _MainPageState extends State<MainPage> {
   Widget _pageForCurrentTab() {
     if (_currentTab == 0) {
       return new MachineListPage();
+    }
+    if (_currentTab == 1) {
+      return new ToiletListPage();
     }
     return new Text("HOGE");
   }
