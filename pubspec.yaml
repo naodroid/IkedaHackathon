@@ -1,0 +1,5 @@
+name: myapp2
+description: A new flutter project.
+dependencies:
+  flutter:
+    sdk: flutter
