@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'machine_list_page.dart';
 import 'toilet_list_page.dart';
+import 'package:myapp2/common/pinned_map_view.dart';
+import 'package:myapp2/model/geolocation.dart';
+import 'package:myapp2/store/my_location_store.dart';
 
 //-------------------------------------------------
 class MainPage extends StatefulWidget {
@@ -57,6 +60,7 @@ class _MainPageState extends State<MainPage> {
     if (_currentTab == 1) {
       return new ToiletListPage();
     }
-    return new Text("HOGE");
+    final location = MyLocationStore.getInstance().getMyLocation();
+    return new PinnedMapView(location);
   }
 }

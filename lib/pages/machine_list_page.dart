@@ -5,17 +5,16 @@ import 'package:myapp2/styles/basic_styles.dart';
 import 'package:myapp2/model/geolocation.dart';
 import 'package:myapp2/store/my_location_store.dart';
 import 'package:myapp2/common/store.dart';
+import 'package:myapp2/common/pinned_map_view.dart';
 
-//現在地。本来はGPS取得したい
-final Geolocation _kMyLocation = new Geolocation(35.858458, 136.304374);
 //
 class _ListItem {
   final VendingMachine machine;
   final double distance;
 
-  _ListItem(VendingMachine machine) :
+  _ListItem(VendingMachine machine, Geolocation myLocation) :
       this.machine = machine,
-      this.distance = machine.location.distanceTo(_kMyLocation);
+      this.distance = machine.location.distanceTo(myLocation);
 }
 
 
@@ -62,7 +61,7 @@ class _MachineListPageState extends State<MachineListPage> implements StateObser
 
 
   static List<_ListItem> _getSortedItem(Geolocation myLocation, List<VendingMachine> machines) {
-    return machines.map((item) => new _ListItem(item))
+    return machines.map((item) => new _ListItem(item, myLocation))
       .toList()
       ..sort((_ListItem a, _ListItem b) => (a.distance - b.distance).toInt());
   }
@@ -84,9 +83,6 @@ class _MapCellItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lat = item.machine.location.latitude;
-    final lon = item.machine.location.longitude;
-    final url = "http://maps.google.com/maps/api/staticmap?center=$lat,$lon&size=320x150&zoom=17&sensor=false";
     final distance = item.distance.toInt();
 
     return new Padding(
@@ -99,10 +95,7 @@ class _MapCellItem extends StatelessWidget {
           children: <Widget>[
             new Flexible(
               flex: 1,
-              child: new Image.network(
-                url,
-                fit: ImageFit.fill
-              ),
+              child: new PinnedMapView(item.machine.location),
             ),
             new Text("Distance ${distance}m")
           ]
@@ -110,5 +103,4 @@ class _MapCellItem extends StatelessWidget {
       )
     );
   }
-
 }

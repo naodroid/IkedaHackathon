@@ -5,17 +5,17 @@ import 'package:myapp2/model/geolocation.dart';
 import 'package:myapp2/model/toilet.dart';
 import 'package:myapp2/store/my_location_store.dart';
 import 'package:myapp2/styles/basic_styles.dart';
+import 'package:myapp2/common/store.dart';
+import 'package:myapp2/common/pinned_map_view.dart';
 
-//現在地。本来はGPS取得したい
-final Geolocation _kMyLocation = new Geolocation(35.858458, 136.304374);
 //
 class _ListItem {
   final Toilet toilet;
   final double distance;
 
-  _ListItem(Toilet toilet) :
+  _ListItem(Toilet toilet, Geolocation myLocation) :
       this.toilet = toilet,
-      this.distance = toilet.location.distanceTo(_kMyLocation);
+      this.distance = toilet.location.distanceTo(myLocation);
 }
 
 
@@ -62,7 +62,7 @@ class _ToiletListPageState extends State<ToiletListPage> implements StateObserve
 
 
   static List<_ListItem> _getSortedItem(Geolocation myLocation, List<Toilet> machines) {
-    return machines.map((item) => new _ListItem(item))
+    return machines.map((item) => new _ListItem(item, myLocation))
       .toList()
       ..sort((_ListItem a, _ListItem b) => (a.distance - b.distance).toInt());
   }
@@ -110,10 +110,7 @@ class _MapCellItem extends StatelessWidget {
           children: <Widget>[
             new Flexible(
               flex: 1,
-              child: new Image.network(
-                url,
-                fit: ImageFit.fill
-              ),
+              child: new PinnedMapView(toilet.location)
             ),
             new Text("Distance ${distance}m"),
             new Text(text1),
