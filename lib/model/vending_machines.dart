@@ -1,9 +1,11 @@
+import 'geolocation.dart';
 
 class VendingMachine {
-  final double latitude;
-  final double longitude;
+  final Geolocation location;
 
-  VendingMachine(this.latitude, this.longitude);
+  VendingMachine(double lat, double lon)
+    : this.location = new Geolocation(lat, lon);
+
 
   //CSVから緯度経度のみ抽出。ほかはいらない
   static final items = <VendingMachine>[

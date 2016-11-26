@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:myapp2/model/vending_machines.dart';
 import 'package:myapp2/styles/basic_styles.dart';
-import 'package:myapp2/common/geolocation.dart';
+import 'package:myapp2/model/geolocation.dart';
+import 'package:myapp2/store/my_location_store.dart';
+import 'package:myapp2/common/store.dart';
 
 //現在地。本来はGPS取得したい
-final double _currentLat = 35.858458;
-final double _currentLng = 136.304374;
+final Geolocation _kMyLocation = new Geolocation(35.858458, 136.304374);
 //
 class _ListItem {
   final VendingMachine machine;
@@ -14,38 +15,67 @@ class _ListItem {
 
   _ListItem(VendingMachine machine) :
       this.machine = machine,
-      this.distance = GeolocationUtil.calcDistance(
-        _currentLat, _currentLng,
-        machine.latitude, machine.longitude)
-  {
-  }
+      this.distance = machine.location.distanceTo(_kMyLocation);
 }
 
 
 //----------------------------------
-class MachineListPage extends StatelessWidget {
-  final List<_ListItem> items = VendingMachine.items
-    .map((item) => new _ListItem(item))
-    .toList()
-    ..sort((a, b) => (a.distance - b.distance).toInt());
+class MachineListPage extends StatefulWidget {
 
-  MachineListPage({Key key}) : super(key: key) {
+  @override
+  State createState() => new _MachineListPageState();
+}
+class _MachineListPageState extends State<MachineListPage> implements StateObserver<Geolocation> {
+  Geolocation _myLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    final store = MyLocationStore.getInstance();
+    _myLocation = store.getMyLocation();
+    store.addObserver(this);
+  }
+
+
+  @override
+  void deactivate() {
+    MyLocationStore.getInstance().removeObserver(this);
+
+    super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<_ListItem> _items = _getSortedItem(_myLocation, VendingMachine.items);
+
     return new ScrollableList(
       itemExtent: 150.0,
-      children: _createCells()
+      children: _createCells(_items)
     );
   }
 
-  Iterable<Widget> _createCells() {
+  Iterable<Widget> _createCells(List<_ListItem> items) {
     return items.map(
-      (item) => new MapCellItem(item)
+        (item) => new MapCellItem(item)
     );
   }
+
+
+  static List<_ListItem> _getSortedItem(Geolocation myLocation, List<VendingMachine> machines) {
+    return machines.map((item) => new _ListItem(item))
+      .toList()
+      ..sort((_ListItem a, _ListItem b) => (a.distance - b.distance).toInt());
+  }
+
+  @override
+  void onStateUpdated(Geolocation state) {
+    setState(() {
+      _myLocation = state;
+    });
+  }
 }
+
+
 
 class MapCellItem extends StatelessWidget {
 
@@ -54,8 +84,8 @@ class MapCellItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lat = item.machine.latitude;
-    final lon = item.machine.longitude;
+    final lat = item.machine.location.latitude;
+    final lon = item.machine.location.longitude;
     final url = "http://maps.google.com/maps/api/staticmap?center=$lat,$lon&size=320x150&zoom=17&sensor=false";
     final distance = item.distance.toInt();
 
@@ -74,10 +104,11 @@ class MapCellItem extends StatelessWidget {
                 fit: ImageFit.fill
               ),
             ),
-            new Text("距離 $distance m")
+            new Text("Distance ${distance}m")
           ]
         )
       )
     );
   }
+
 }

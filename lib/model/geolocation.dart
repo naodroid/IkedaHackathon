@@ -4,8 +4,21 @@ final double BESSEL_A = 6377397.155;
 final double BESSEL_E2 = 0.00667436061028297;
 final double BESSEL_MNUM = 6334832.10663254;
 
-class GeolocationUtil {
 
+class Geolocation {
+  final double latitude;
+  final double longitude;
+
+  Geolocation(this.latitude, this.longitude);
+
+  double distanceTo(Geolocation other) {
+    return calcDistance(this.latitude, this.longitude, other.latitude, other.longitude);
+  }
+  static double distance(Geolocation loc1, Geolocation loc2) {
+    return loc1.distanceTo(loc2);
+  }
+
+  //
   static double deg2rad(double deg) {
     return deg * PI / 180.0;
   }
@@ -26,4 +39,11 @@ class GeolocationUtil {
 
     return sqrt(dym * dym + dxncos * dxncos);
   }
+}
+
+
+class GeolocationHolder {
+  final Geolocation location;
+
+  GeolocationHolder(this.location);
 }
