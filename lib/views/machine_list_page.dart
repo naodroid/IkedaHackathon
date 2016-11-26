@@ -34,14 +34,9 @@ class MachineListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Machine List")
-      ),
-      body: new ScrollableList(
-        itemExtent: 150.0,
-        children: _createCells()
-      )
+    return new ScrollableList(
+      itemExtent: 150.0,
+      children: _createCells()
     );
   }
 
