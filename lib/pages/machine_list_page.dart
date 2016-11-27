@@ -11,10 +11,12 @@ import 'package:myapp2/common/pinned_map_view.dart';
 class _ListItem {
   final VendingMachine machine;
   final double distance;
+  final double orientation;
 
   _ListItem(VendingMachine machine, Geolocation myLocation) :
       this.machine = machine,
-      this.distance = machine.location.distanceTo(myLocation);
+      this.distance = machine.location.distanceTo(myLocation),
+      this.orientation = machine.location.orientationTo(myLocation);
 }
 
 
@@ -95,7 +97,9 @@ class _MapCellItem extends StatelessWidget {
           children: <Widget>[
             new Flexible(
               flex: 1,
-              child: new PinnedMapView(item.machine.location),
+              child: new PinnedMapView(
+                item.machine.location,
+                orientation: item.orientation),
             ),
             new Text("Distance ${distance}m")
           ]

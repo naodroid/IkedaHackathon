@@ -27,7 +27,7 @@ class _MainPageState extends State<MainPage> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Ikeda Hackathon"),
+        title: new Text("自販機ナビ"),
       ),
       body: body,
       bottomNavigationBar: new BottomNavigationBar(

@@ -18,6 +18,9 @@ class Geolocation {
     return loc1.distanceTo(loc2);
   }
 
+  double orientationTo(Geolocation other) {
+    return calcOrientation(this.latitude, this.longitude, other.latitude, other.longitude);
+  }
   //
   static double deg2rad(double deg) {
     return deg * PI / 180.0;
@@ -38,6 +41,17 @@ class Geolocation {
     final dxncos = dx * n * cos(my);
 
     return sqrt(dym * dym + dxncos * dxncos);
+  }
+  //二点間の方位を計算する。
+  //http://tomari.org/main/java/gps5.html
+  //North: 0  East M_PI / 2  South: M_PI  West: M_PI * 3 / 2
+  static double calcOrientation(double lat1, double lng1, double lat2, double lng2) {
+    double x1 = deg2rad(lng1);
+    double x2 = deg2rad(lng2);
+    double y1 = deg2rad(lat1);
+    double y2 = deg2rad(lat2);
+
+    return (PI / 2) - atan2(sin(x2-x1),cos(y1) * tan(y2) - sin(y1) * cos(x2 - x1));
   }
 }
 
