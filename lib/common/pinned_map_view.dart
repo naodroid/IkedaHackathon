@@ -5,15 +5,17 @@ import 'package:vector_math/vector_math_64.dart' as math;
 class PinnedMapView extends StatelessWidget {
   final Geolocation location;
   final double orientation;
+  final int zoom;
 
-  PinnedMapView(this.location, {Key key, this.orientation}) : super(key: key) {
+  PinnedMapView(this.location, {Key key, this.orientation, this.zoom}) : super(key: key) {
   }
 
   @override
   Widget build(BuildContext context) {
     final lat = location.latitude;
     final lon = location.longitude;
-    final url = "http://maps.google.com/maps/api/staticmap?center=$lat,$lon&size=320x140&zoom=17&sensor=false";
+    int zoom = this.zoom ?? 17;
+    final url = "http://maps.google.com/maps/api/staticmap?center=$lat,$lon&size=320x140&zoom=${zoom}&sensor=false";
 
     List<Widget> children = new List<Widget>();
     children.add(

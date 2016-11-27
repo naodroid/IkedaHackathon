@@ -121,5 +121,4 @@ class _MapCellItem extends StatelessWidget {
       )
     );
   }
-
 }

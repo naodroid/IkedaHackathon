@@ -14,4 +14,15 @@ final kCellParentStyle = new BoxDecoration(
     )
     ],
 );
+final kSeparatorStyle = new BoxDecoration(
+  backgroundColor: const Color(0xFFA0A0A0),
+);
 
+final kMainTextStyle = new TextStyle(
+  color: const Color(0xFF404040),
+  fontSize: 16.0,
+);
+final kSubTextStyle = new TextStyle(
+  color: const Color(0xFF808080),
+  fontSize: 12.0,
+);

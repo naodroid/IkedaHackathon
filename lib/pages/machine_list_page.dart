@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:myapp2/model/vending_machines.dart';
-import 'package:myapp2/styles/basic_styles.dart';
-import 'package:myapp2/model/geolocation.dart';
-import 'package:myapp2/store/my_location_store.dart';
 import 'package:myapp2/common/store.dart';
 import 'package:myapp2/common/pinned_map_view.dart';
+import 'package:myapp2/model/geolocation.dart';
+import 'package:myapp2/model/vending_machines.dart';
+import 'machine_detail_page.dart';
+import 'package:myapp2/styles/basic_styles.dart';
+import 'package:myapp2/store/my_location_store.dart';
 
 //
 class _ListItem {
@@ -89,22 +90,32 @@ class _MapCellItem extends StatelessWidget {
 
     return new Padding(
       padding: new EdgeInsets.all(8.0),
-      child: new Container(
-        decoration: kCellParentStyle,
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: new GestureDetector(
+        onTap: () => onCellTap(context),
+        child: new Container(
+          decoration: kCellParentStyle,
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
 
-          children: <Widget>[
-            new Flexible(
-              flex: 1,
-              child: new PinnedMapView(
-                item.machine.location,
-                orientation: item.orientation),
-            ),
-            new Text("Distance ${distance}m")
-          ]
+            children: <Widget>[
+              new Flexible(
+                flex: 1,
+                child: new PinnedMapView(
+                  item.machine.location,
+                  orientation: item.orientation,
+                  zoom: 15),
+              ),
+              new Text("Distance ${distance}m")
+            ]
+          )
         )
       )
     );
+  }
+  void onCellTap(BuildContext context) {
+    final route = new MaterialPageRoute<Null>(
+      builder: (context) => new MachineDetailPage(item.machine)
+    );
+    Navigator.push(context, route);
   }
 }
